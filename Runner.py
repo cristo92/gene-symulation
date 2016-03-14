@@ -14,7 +14,7 @@ if __name__ == "__main__":
 	conf = args.config
 	samples = vars(args).get('samples', 1)
 
-	T = [0.001, 0.01, 0.1, 0.2, 0.5, 1, 2.5, 5, 10, 50]
+	T = [0, 0.0001, 0.001, 0.01, 0.1, 0.2, 0.5, 1, 2.5, 5, 10, 50]
 	
 	A0 = {}
 	n = {}
@@ -36,14 +36,14 @@ if __name__ == "__main__":
 		n[model] = _n
 
 	print("============ A0 ============")
-	print("\t\t{}".format("\t".join([str(t) for t in T])))
+	print("Tau\t\t{}".format("\t".join([str(t) for t in T])))
 	for model in args.models:
 		_A0 = A0[model]
 		print("{}{}{}".format(model[:15], "\t" * max(1, 2 - len(model)/8), 
-		           "\t".join(["{:.2f}".format(t) for t in _A0])))
+		           "\t".join(["{:.3f}".format(t) for t in _A0])))
 	print("============ n =============")
-	print("\t\t{}".format("\t".join([str(t) for t in T])))
+	print("Tau\t\t{}".format("\t".join([str(t) for t in T])))
 	for model in args.models:
 		_n = n[model]
 		print("{}{}{}".format(model[:15], "\t" * max(1, 2 - len(model)/8), 
-		           "\t".join(["{:.2f}".format(t) for t in _n])))
+		           "\t".join(["{:.3f}".format(t) for t in _n])))

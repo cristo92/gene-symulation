@@ -26,9 +26,9 @@ class BaseModel(object):
 			elif line[0] == 't_const':
 				self.t_const = float(line[1])
 			elif line[0] == 'n_beg':
-				self.n_beg = float(line[1])
+				self.n_beg = int(line[1])
 			elif line[0] == 'dna_beg':
-				self.dna_beg = float(line[1])
+				self.dna_beg = int(line[1])
 
 	def run(self, samples):
 		return {

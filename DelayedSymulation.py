@@ -8,16 +8,19 @@ class DelayedSymulation(BaseModel):
 	def run(self, samples):
 		initial_state = State(self.n_beg, self.dna_beg)
 		mean_values = []
-		pr_values = []
 		history = []
+		A = [ [], [] ]
+		N = []
 
 		while samples > 0:
 			samples = samples - 1
 			time = 0.0
 			mean = 0.0
-			counter = 0.0
-			pr1 = 0.0
-			last_dna_change = 0
+			counter = 0
+			last_dna_change = self.t_const
+			last_n_change = self.t_const
+			_A = [0, 0]
+			_N = 0
 
 			state = initial_state
 			eggs = []
@@ -34,7 +37,6 @@ class DelayedSymulation(BaseModel):
 				if time > self.t_const:
 					mean += state.n
 					counter += 1
-					pr1 += state.dna
 
 				time += exponential(1. / lam)
 				values = []
@@ -50,20 +52,46 @@ class DelayedSymulation(BaseModel):
 				if event == "k":
 					eggs.append(time)
 				elif event == "beta":
+					if time > self.t_const:
+						_A[state.dna] += (time - last_dna_change)
+						last_dna_change = time
 					state.dna = 1
 				elif event == "alpha":
+					if time > self.t_const:
+						_A[state.dna] += (time - last_dna_change)
+						last_dna_change = time
 					state.dna = 0
 				elif event == "gamma":
+					if time > self.t_const:
+						_N += (time - last_n_change) * state.n
+						last_n_change = time
 					state.n -= 1
 				while eggs and eggs[0] + self.tau <= time:
+					if time > self.t_const:
+						_N += (time - last_n_change) * state.n
+						last_n_change = time
 					state.n += 1
 					eggs = eggs[1:]
 			
+			_A[state.dna] += (time - last_dna_change)
+			_N += (time - last_n_change) * state.n
+
 			mean_values.append(mean / counter)
-			pr_values.append(pr1 / counter)
+			A[0].append(_A[0] / (self.t_max - self.t_const))
+			A[1].append(_A[1] / (self.t_max - self.t_const))
+			N.append(_N / (self.t_max - self.t_const))
 		#print mean_values
 		#print "\n"
 		#print "{0} {1}\n".format(np.mean(mean_values), np.var(mean_values))
 		#print "{0} {1}\n".format(np.mean(pr_values), np.var(pr_values))
 
-		return (np.mean(mean_values), np.var(mean_values))
+		n = np.mean(mean_values)
+		n_var = np.var(mean_values)
+		A0 = np.mean(A[0])
+		A1 = np.mean(A[1])
+
+		return {
+			"A0": A0,
+			"A1": A1,
+			"n": np.mean(N)
+		}

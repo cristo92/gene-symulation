@@ -11,7 +11,15 @@ class MyPNAS(BaseModel):
 		gamma = self.gamma
 
 		#print beta * gamma - 4 * k0 * alpha * beta
-		delta = np.sqrt(beta * gamma * beta * gamma - 4 * k0 * alpha * beta)
-		x1 = (delta - beta * gamma) / alpha
+		k0_delta = np.sqrt(alpha * gamma * alpha * gamma - 4 * k0 * alpha * beta)
+		n = (k0_delta - alpha * gamma) / (2 * beta)
 
-		return (x1, 0)
+		A0 = gamma * n / k0
+		A1 = 1 - A0
+		print A0, A1, n
+
+		return {
+			"n": n,
+			"A0": A0,
+			"A1": A1
+		}

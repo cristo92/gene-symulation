@@ -14,4 +14,8 @@ class PNAS(BaseModel):
 
 		n = n1 = n2 = A / (B + epsilon * A)
 
-		return (n, 0)
+		return {
+			"n": n,
+			"A0": 0,
+			"A1": 0
+		}
