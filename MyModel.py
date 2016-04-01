@@ -3,7 +3,7 @@ import numpy as np
 
 from BaseModel import BaseModel
 
-class MyModelv2(BaseModel):
+class MyModel(BaseModel):
 	""" Wersja bez A0 w 2.14 i 2.15 """
 	def run(self, samples):
 		k0 = self.k0
