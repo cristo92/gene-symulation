@@ -88,6 +88,7 @@ class DelayedSymulation(BaseModel):
 
 		for n in N:
 			print n
+		print np.var(N)
 
 		A0 = np.mean(A[0])
 		A1 = np.mean(A[1])
