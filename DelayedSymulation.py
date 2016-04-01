@@ -14,7 +14,7 @@ class DelayedSymulation(BaseModel):
 		N = []
 		init_samples = samples
 
-		stdout.write("Symulation progress...   0%")
+		stdout.write("Symulation progress...\nAlpha({}) Beta({}) k({}) gamma({}) tau({})\n0%".format(self.alpha, self.beta, self.k0, self.gamma, self.tau))
 		stdout.flush()
 
 		while samples > 0:
