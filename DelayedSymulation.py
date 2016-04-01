@@ -3,6 +3,7 @@ from utils import weighted_values, State
 import math
 import numpy as np
 from numpy.random import exponential
+from sys import stdout
 
 class DelayedSymulation(BaseModel):
 	def run(self, samples):
@@ -11,6 +12,10 @@ class DelayedSymulation(BaseModel):
 		history = []
 		A = [ [], [] ]
 		N = []
+		init_samples = samples
+
+		stdout.write("Symulation progress...   0%")
+		stdout.flush()
 
 		while samples > 0:
 			samples = samples - 1
@@ -25,7 +30,6 @@ class DelayedSymulation(BaseModel):
 			state = initial_state
 			eggs = []
 			while time < self.t_max:
-	#			print "{0} {1} {2:.2f} {3}".format(state.n, state.dna, time, eggs)
 				lam = 0.0
 				if state.dna == 0:
 					lam += self.k0
@@ -34,9 +38,6 @@ class DelayedSymulation(BaseModel):
 					lam += self.k1
 					lam += self.alpha
 				lam += state.n * self.gamma
-				if time > self.t_const:
-					mean += state.n
-					counter += 1
 
 				time += exponential(1. / lam)
 				values = []
@@ -76,22 +77,24 @@ class DelayedSymulation(BaseModel):
 			_A[state.dna] += (time - last_dna_change)
 			_N += (time - last_n_change) * state.n
 
-			mean_values.append(mean / counter)
 			A[0].append(_A[0] / (self.t_max - self.t_const))
 			A[1].append(_A[1] / (self.t_max - self.t_const))
 			N.append(_N / (self.t_max - self.t_const))
-		#print mean_values
-		#print "\n"
-		#print "{0} {1}\n".format(np.mean(mean_values), np.var(mean_values))
-		#print "{0} {1}\n".format(np.mean(pr_values), np.var(pr_values))
 
-		n = np.mean(mean_values)
-		n_var = np.var(mean_values)
+			stdout.write("\r%d%%" % int((init_samples - samples) * 100 / init_samples))
+			stdout.flush()
+
+		stdout.write("\n") # move the cursor to the next line
+
+		for n in N:
+			print n
+
 		A0 = np.mean(A[0])
 		A1 = np.mean(A[1])
 
 		return {
 			"A0": A0,
 			"A1": A1,
-			"n": np.mean(N)
+			"n": np.mean(N),
+			'n_var': np.var(N)
 		}

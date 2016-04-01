@@ -3,7 +3,8 @@ import numpy as np
 
 from BaseModel import BaseModel
 
-class MyModel(BaseModel):
+class MyModelv2(BaseModel):
+	""" Wersja bez A0 w 2.14 i 2.15 """
 	def run(self, samples):
 		k0 = self.k0
 		k1 = self.k1
@@ -12,24 +13,28 @@ class MyModel(BaseModel):
 		gamma = self.gamma
 		tau = self.tau
 
-		a = k0 - k0 * np.exp(-alpha * tau)
-		b = -k0 + k0 * np.exp(-alpha * tau) - k0 + k0 * np.exp(-alpha * tau) -k0 - alpha * gamma / beta - k0 * alpha / gamma +\
-		 alpha * alpha / beta - alpha * alpha / beta
-		c = k0 - k0 * np.exp(-alpha * tau) + k0 + alpha * gamma / beta + k0 * alpha / gamma + alpha * alpha / beta + k0 +\
-		 alpha * k0 / gamma + alpha
-		d = -k0 - alpha * k0 / gamma - alpha
-		T = np.roots([a,b,c,d])
+		#a = k0 * (1 - np.exp(-alpha * tau)) + gamma * alpha / beta - alpha * alpha / beta - alpha * (1 - k0 / gamma) + alpha * alpha / beta
+		#b = 0 - k0 - k0 * (1 - np.exp(-alpha * tau)) - gamma * alpha / beta + alpha *(1 - k0 / gamma) - alpha * alpha / beta - alpha * k0 / gamma
+		#c = k0 + alpha * k0 / gamma
+		a = 2 * k0 - k0 * np.exp(- alpha * tau) - alpha + gamma * alpha / beta + alpha * k0 / gamma
+		b = - 3 * k0 + k0 * np.exp(- alpha * tau) - gamma * alpha / beta - 2 * alpha * k0 / gamma + alpha - alpha * alpha / beta
+		c = k0 + alpha * k0 / gamma
 
+		delta = math.sqrt(b * b - 4 * a * c)
+		A1_1 = (- delta - b ) / (2 * a)
+		A1_2 = (delta - b) / (2 * a)
 
-		A1 = 0.0
-		for t in T:
-			if t >= 0.0 and t <= 1.0:
-				A1 = t
+		A1 = 0
+		if A1_1 > 0 and A1_1 < 1:
+			A1 = A1_1
+		elif A1_2 > 0 and A1_2 < 1:
+			A1 = A1_2
+		A0 = 1 - A1
 
-		n = k0 / gamma + (1 - k0 / gamma) * A1
+		n = A1 + k0 * A0 / gamma
 
 		return {
-			"A0": 1 - A1,
+			"A0": A0,
 			"A1": A1,
 			"n": n
 			}
