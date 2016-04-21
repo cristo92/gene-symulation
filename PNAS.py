@@ -5,17 +5,11 @@ from BaseModel import BaseModel
 
 class PNAS(BaseModel):
 	def run(self, samples):
-		A = self.k0
-		k_1 = self.alpha
-		k1 = self.beta
-		B = self.gamma
-
-		epsilon = k1 / k_1
-
-		n = n1 = n2 = A / (B + epsilon * A)
+		n = self.k0 / (self.gamma + self.beta * self.k0 / self.alpha)
+		A0 = self.alpha / (self.alpha + self.beta * n)
 
 		return {
 			"n": n,
-			"A0": 0,
-			"A1": 0
+			"A0": A0,
+			"A1": 1 - A0
 		}

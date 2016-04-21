@@ -37,7 +37,7 @@ class DelayedSymulation(BaseModel):
 				elif state.dna == 1:
 					lam += self.k1
 					lam += self.alpha
-				lam += state.n * self.gamma
+				lam += (state.n - state.dna) * self.gamma
 
 				time += exponential(1. / lam)
 				values = []
@@ -47,7 +47,7 @@ class DelayedSymulation(BaseModel):
 					probabilities = [self.k0, state.n * self.beta, state.n * self.gamma]
 				elif state.dna == 1:
 					values = ["k", "alpha", "gamma"]
-					probabilities = [self.k1, self.alpha, state.n * self.gamma]
+					probabilities = [self.k1, self.alpha, (state.n - state.dna) * self.gamma]
 				event = weighted_values(values, probabilities)
 				
 				if event == "k":
